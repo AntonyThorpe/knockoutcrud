@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="description" content="A Todo List app created using Knockout js with Knockout Crud plugin">
+	<title>Knockout Todo App</title>
+	<link rel="stylesheet" href="css/Todo.css">
+	<script src="js/knockout.js"></script>
+	<script src="knockoutcrud.js"></script>
+	<script src="js/TodoList.js"></script>
+</head>
+<body>
+	<h1>Knockout Crud Example 1 - Directly edit the Observable Array</h1>
+	<div class="left-panel">
+		<!-- ko ifnot: todoList.beforeEdit -->
+			<button data-bind="click: prepareCollectionEdit" class="button">Edit Todo List</button>
+		<!-- /ko -->
+		<!-- ko if: todoList.beforeEdit -->
+			<button data-bind="click: save" class="button">Save</button>
+			<button data-bind="click: cancel" class="button">Cancel</button>
+		<!-- /ko -->
+	</div>
+	
+	<!-- ko if: todoList.beforeEdit -->
+		<div class="content-panel">
+			<button data-bind="click: addTask" class="button">Add Task</button>
+		</div>
+		<div class="content-panel">
+			<div data-bind="foreach: todoList">
+				<div class="note" data-bind="css: completed() ? 'complete' : 'incomplete'">
+					<div>
+						<span data-bind="click: $root.todoList.deleteItem" class="remove">X</span>
+					</div>
+					<div data-bind="click: $root.editItem">
+						<!-- ko if: _id.isSelected -->
+							<input type="text" data-bind="textInput: task, hasFocus: _id.isSelected" class="todo-input">
+						<!-- /ko -->
+						<!-- ko ifnot: _id.isSelected -->
+							<p><span data-bind="text: task"></span></p>
+						<!-- /ko -->
+					</div>
+					<label>
+						 <input type="checkbox" data-bind="checked: completed">Complete
+					</label>
+				</div>
+			</div>
+		</div>
+	<!-- /ko -->
+
+	<div class="content-panel">
+		<table>
+			<thead>
+				<tr>
+					<th>index</th>
+					<th>_id</th>
+					<th>Task</th>
+					<th>Completed</th>
+					<th>isSelected</th>
+				</tr>
+			</thead>
+			<tbody data-bind="foreach: todoList">
+				<tr>
+					<td data-bind='text: $index'></td>
+					<td data-bind='text: _id'></td>
+					<td data-bind='text: task'></td>
+					<td data-bind='text: completed'></td>
+					<td data-bind='text: _id.isSelected'></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<h1>Knockout Crud Example 2 - Editing an object as a protected observable</h1>
+	<div class="left-panel">
+		<!-- ko ifnot: todoList2.beforeEdit -->
+			<button data-bind="click: prepareCollectionEdit2" class="button">Edit Todo List No2</button>
+		<!-- /ko -->
+		<!-- ko if: todoList2.beforeEdit -->
+			<button data-bind="click: save2" class="button">Save</button>
+			<button data-bind="click: cancel2" class="button">Cancel</button>
+		<!-- /ko -->
+	</div>
+
+	<!-- ko if: todoList2.beforeEdit -->
+		<div class="content-panel">
+			<button data-bind="click: addTask2" class="button">Add Task</button>
+		</div>
+		<div class="content-panel">
+			<div data-bind="foreach: todoList2">
+				<div class="note" data-bind="css: completed() ? 'complete' : 'incomplete'">
+					<div>
+						<span data-bind="click: $root.todoList2.deleteItem" class="remove">X</span>
+					</div>
+					<div data-bind="click: $root.todoList2.selectItem">
+						<p><span data-bind="text: task"></span></p>
+						<p data-bind="if: completed"><span>Completed</span></p>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="content-panel" data-bind="with: todoList2.itemForEditing">
+			<h2>Editing</h2>
+			<input type="text" data-bind="textInput: task, hasFocus: true" class="todo-input">
+			<label>
+				 <input type="checkbox" data-bind="checked: completed">Complete
+			</label>
+			<button data-bind="click: $root.todoList2.acceptItem" class="button">Accept Edit</button>
+			<button data-bind="click: $root.todoList2.revertItem" class="button">Revert Edit</button>
+		</div>
+	<!-- /ko -->
+
+	<div class="content-panel">
+		<table>
+			<thead>
+				<tr>
+					<th>index</th>
+					<th>_id</th>
+					<th>Task</th>
+					<th>Completed</th>
+					<th>isSelected</th>
+				</tr>
+			</thead>
+			<tbody data-bind="foreach: todoList">
+				<tr>
+					<td data-bind='text: $index'></td>
+					<td data-bind='text: _id'></td>
+					<td data-bind='text: task'></td>
+					<td data-bind='text: completed'></td>
+					<td data-bind='text: _id.isSelected'></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	
+	<script>
+		function TodoViewModel(){
+			var self = this;
+			self.todoList = ko.observableArray().crud({
+				constructor: TodoList, 
+				uniqueIdentifier: "_id"
+			});
+
+			//initialise with a few Todos
+			self.todoList.insert([{
+				_id: "123",
+				task: "start engines",
+				completed: true
+			},{
+				_id: "124",
+				task: "check wings",
+				completed: false
+			},
+			{
+				_id: "125",
+				task: "test flaps",
+				completed: false
+			}]);
+
+			self.prepareCollectionEdit = function(data) {
+				self.todoList.beforeEdit(ko.toJS(self.todoList()));
+			};
+
+			self.addTask = function() {
+				var toSave = {};
+				// save new items
+				var newInstance = self.todoList.insert(toSave);
+				self.todoList.justAdded.push(newInstance);
+
+				var index = self.todoList.indexOf(newInstance);
+				self.todoList()[index]._id.isSelected(true);
+			};
+
+			self.save = function() {
+				self.todoList.justRemoved.removeAll(); // empty the parked removed 
+				self.todoList.justAdded.removeAll(); // empty the parked adds
+				self.todoList.beforeEdit(null);
+			};
+
+			self.cancel = function() {
+				// return model to cache version
+				self.todoList.cancelEdit();
+				self.todoList.beforeEdit(null);
+			};
+
+			self.editItem = function(item) {
+				item._id.isSelected(true);
+				self.todoList.selectItem(item);
+			};
+
+
+			// Second example
+			self.todoList2 = ko.observableArray().crud({
+				constructor: TodoList, 
+				uniqueIdentifier: "_id"
+			});
+
+			//initialise with a few Todos
+			self.todoList2.insert([{
+				_id: "123",
+				task: "start engines",
+				completed: true
+			},{
+				_id: "124",
+				task: "check wings",
+				completed: false
+			},
+			{
+				_id: "125",
+				task: "test flaps",
+				completed: false
+			}]);
+
+			self.prepareCollectionEdit2 = function(data) {
+				self.todoList2.beforeEdit(ko.toJS(self.todoList()));
+			};
+
+			self.addTask2 = function() {
+				var toSave = {};
+				// save new items
+				var newInstance = self.todoList2.insert(toSave);
+				self.todoList2.justAdded.push(newInstance);
+
+				var index = self.todoList2.indexOf(newInstance);
+				self.todoList2()[index]._id.isSelected(true);
+			};
+
+			self.save2 = function() {
+				self.todoList2.justRemoved.removeAll(); // empty the parked removed 
+				self.todoList2.justAdded.removeAll(); // empty the parked adds
+				self.todoList2.beforeEdit(null);
+			};
+
+			self.cancel2 = function() {
+				// return model to cache version
+				self.todoList2.cancelEdit();
+				self.todoList2.beforeEdit(null);
+			};
+		};
+		
+		ko.applyBindings(new TodoViewModel());
+	</script>
+</body>
+</html>
