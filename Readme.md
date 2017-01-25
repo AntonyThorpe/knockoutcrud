@@ -43,7 +43,11 @@ This separates creation from initialisation.  Fresh data can be applied at any t
 
 ## Installation
 ```sh
-bower install https://github.com/AntonyThorpe/knockoutcrud.git
+bower install https://github.com/AntonyThorpe/knockoutcrud.git --save
+```
+Or
+```sh
+npm install https://github.com/AntonyThorpe/knockoutcrud/archive/1.0.0.tar.gz --save
 ```
 Include `knockoutcrud.js` after loading `knockout`.
 
