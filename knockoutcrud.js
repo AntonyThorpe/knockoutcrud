@@ -283,6 +283,9 @@
 		// Edit copy
 		this.itemForEditing = ko.observable();
 
+		// New copy.  Provide a separate the adding observable for when a dedicated.
+		this.itemForAdding = ko.observable();
+
 		//populate the selected item and make a copy for editing
 		this.selectItem = function(item) {
 			this.selectedItem(item);

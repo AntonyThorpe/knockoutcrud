@@ -97,6 +97,7 @@ The reason for `justRemoved` and `justAdded` properties is to speed up the cance
 ### Properties added to Observable Arrays
 * `selectedItem`: holds the original object (an Observable).  In effect, a copy of 'this'.
 * `itemForEditing`: the edited copy
+* `itemForAdding`: For when a diffent form is needed for adding
 
 ## Requirements
 * [Knockout](http://knockoutjs.com/index.html)
