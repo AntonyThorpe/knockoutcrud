@@ -47,9 +47,13 @@ bower install https://github.com/AntonyThorpe/knockoutcrud.git --save
 ```
 Or
 ```sh
-npm install https://github.com/AntonyThorpe/knockoutcrud/archive/1.0.0.tar.gz --save
+npm install knockoutcrud --save
 ```
 Include `knockoutcrud.js` after loading `knockout`.
+```js
+import ko from 'knockout';
+import 'knockoutcrud';
+```
 
 ## Configuration
 To load the methods and properties against an Observable Array initiate by:
@@ -79,20 +83,21 @@ And, in html:
 ### Methods added to Observable Arrays
 * `insert`: to add new records to a collection.  This method needs an array or single object of items to push.
 * `upsert`: to add or update records in a collection.  This method needs an array/object of items to push/update (must contain the unique identifier to be able to find objects to update).
-* `deleteItem`: remove an item from an edited collection
+* `deleteItem`: remove an instance from an edited collection
 * `cancelEdit`: roll back the collection to what it was originally
 
 ### Properties added to Observable Arrays
 * `beforeEdit`: hold a copy of the original collection for running through upon cancel
 * `justRemoved`: parked removed instances held temporary incase of cancellation of a collection edit
 * `justAdded`: parked added instances held temporary incase of cancellation of a collection edit
-The reason for `justRemoved` and `justAdded` properties is to speed up the cancel step to revert the collection back.  This is quicker than finding the difference betweeen the start and end point before saving.
+The reason for `justRemoved` and `justAdded` properties is to speed up the cancel step.  This is quicker than finding the difference betweeen the start and end points before cancelling.
 
 ## Editing an object within an Observable Array
 ### Methods added to Observable Arrays
 * `selectItem`: populates `selectedItem` and provides a clean copy of the item for editing to `itemForEditing` property
 * `acceptItem`: accept the changes and update the original object
-* `revertItem`: cancel changes 
+* `revertItem`: cancel changes to the object
+* `removeItem`: remove the item currently being edited
 
 ### Properties added to Observable Arrays
 * `selectedItem`: holds the original object (an Observable).  In effect, a copy of 'this'.

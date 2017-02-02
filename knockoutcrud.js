@@ -267,6 +267,12 @@
 		};
 
 
+		/**
+		 * Provide a separate observable for adding an item to an array
+		 * @type {observable}
+		 */
+		this.itemForAdding = ko.observable();
+
 
 		/**
 		 * Editing an object within an array of objects
@@ -282,9 +288,6 @@
 
 		// Edit copy
 		this.itemForEditing = ko.observable();
-
-		// New copy.  Provide a separate the adding observable for when a dedicated.
-		this.itemForAdding = ko.observable();
 
 		//populate the selected item and make a copy for editing
 		this.selectItem = function(item) {
@@ -306,6 +309,19 @@
 
 		// throw away the edited item and clear the selected observables
 		this.revertItem = function() {
+			this.selectedItem(null);
+			this.itemForEditing(null);
+		}.bind(this);
+
+		this.removeItem = function() {
+			var selected = this.selectedItem(); // obtain "this"
+			var id = ko.unwrap(selected[params.uniqueIdentifier]);
+			var exists = ko.utils.arrayFirst(this.peek(), function(item) {
+				return ko.unwrap(item[params.uniqueIdentifier]) === id;
+			});
+			this.remove(exists);
+
+			//clear selected item
 			this.selectedItem(null);
 			this.itemForEditing(null);
 		}.bind(this);
