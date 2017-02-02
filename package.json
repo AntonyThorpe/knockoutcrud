@@ -1,6 +1,6 @@
 {
 	"name": "knockoutcrud",
-	"version": "1.1.0",
+	"version": "1.2.0",
 	"description": "A knockoutjs extension to crud items in Observables and Observable Arrays",
 	"main": "knockoutcrud.js",
 	"repository": {
