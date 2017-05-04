@@ -63,7 +63,7 @@ this.spaceExploration = ko.observableArray().crud({
     uniqueIdentifier: "_id"
 });
 ```
-The unique identifier is needed if utilising the `upsert` function.
+The unique identifier is needed if utilising the `upsert` and `justUpdated`functions.
 
 ## Focus
 ### Method added to Observables
@@ -91,6 +91,7 @@ And, in html:
 * `justRemoved`: parked removed instances held temporary incase of cancellation of a collection edit
 * `justAdded`: parked added instances held temporary incase of cancellation of a collection edit
 The reason for `justRemoved` and `justAdded` properties is to speed up the cancel step.  This is quicker than finding the difference betweeen the start and end points before cancelling.
+* `justUpdated`: get what has changed.  Finds the deep difference between the current Observable Array and `beforeEdit` and returns a 'previousValue' and 'value' for comparison.
 
 ## Editing an object within an Observable Array
 ### Methods added to Observable Arrays
@@ -103,6 +104,9 @@ The reason for `justRemoved` and `justAdded` properties is to speed up the cance
 * `selectedItem`: holds the original object (an Observable).  In effect, a copy of 'this'.
 * `itemForEditing`: the edited copy
 * `itemForAdding`: For when a diffent form is needed for adding
+
+## Pro Tip: Updating the Server after CRUD Operations
+Upon saving the CRUD operations, call `justRemoved`, `justAdded` and `justUpdated` on the Observable Array to provide a full set of data needed to forward to the server.
 
 ## Requirements
 * [Knockout](http://knockoutjs.com/index.html)

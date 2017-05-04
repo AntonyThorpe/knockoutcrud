@@ -60,6 +60,41 @@
 		this.justRemoved = ko.observableArray();
 		this.justAdded = ko.observableArray();
 
+		/**
+		 * Compare to the beforeEdit to obtain the difference with the current observableArray.  Useful for updating the server following completion of edits to an observableArray.
+		 * @return {array} two keys of 'previousValue' and 'value'
+		 */
+		this.justUpdated = function(){
+			var originalItems = ko.toJS(this.beforeEdit.peek());
+			if (originalItems) {
+				var edited = ko.observableArray(this.slice(0));
+				edited.removeAll(this.justAdded.peek());
+				var editedClean = ko.toJS(edited);
+
+				if (editedClean.length) {
+					var toReturn = [];
+					ko.utils.arrayForEach(editedClean, function(item){
+						// get original item
+						var originalItem = ko.utils.arrayFirst(originalItems, function(original){
+							return original[params.uniqueIdentifier] === item[params.uniqueIdentifier];
+						});
+
+						// record if different
+						if (ko.toJSON(item) !== ko.toJSON(originalItem)) {
+							delete originalItem[params.nameOfUpdateFunction];
+							delete item[params.nameOfUpdateFunction];
+							toReturn.push({
+								previousValue: originalItem,
+								value: item
+							});
+						}
+					});
+					return toReturn;
+				}
+			}
+			return null;
+		};
+
 
 		// Add new data to an Observable Array with an array or object
 		// Based upon Knockout.js Performance Gotcha #2 - Manipulating observableArrays

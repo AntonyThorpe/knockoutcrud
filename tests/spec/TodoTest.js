@@ -82,6 +82,7 @@ describe("Upserting items: ", function() {
 	beforeEach(function() {
 		todoList.removeAll();
 		todoList.insert([{
+			
 			task: "start your engines",
 			completed: true
 		}, {
@@ -149,6 +150,71 @@ describe("Upserting items: ", function() {
 		}]);
 		expect(todoList().length).toEqual(4);
 		expect(todoList()[1].task()).toBe("counting down 123");
+	});
+});
+
+describe("justUpdated: ", function(){
+	it("Changes to an observableArray with return a previous and current value", function(){
+		var todoList = ko.observableArray().crud({
+			constructor: TodoList,
+			uniqueIdentifier: "_id"
+		});
+		
+		todoList.insert([{
+			_id: "123",
+			task: "start your engines",
+			completed: true
+		}, {
+			_id: "456",
+			task: "counting down"
+		}, {
+			_id: "789",
+			task: "blastoff"
+		}]);
+
+		// Setup for editing
+		todoList.beforeEdit(ko.toJS(todoList()));
+
+		// Add an item
+		var newItem = todoList.insert([{
+			_id: "678",
+			task: "counting where ever"
+		}]);
+		todoList.justAdded(newItem);
+
+		// Make two changes
+		todoList()[0].completed(false);
+		todoList()[2].task("blastoff and away");
+
+		// Remove an item
+		todoList.deleteItem(todoList()[1]);
+
+		var justUpdated = todoList.justUpdated();
+		expect(justUpdated.length).toEqual(2);
+		expect(justUpdated[0].previousValue).toEqual({
+			_id: "123",
+			task: "start your engines",
+			completed: true
+		});
+		expect(justUpdated[0].value).toEqual({
+			_id: "123",
+			task: "start your engines",
+			completed: false
+		});
+		expect(justUpdated[1].previousValue).toEqual(
+			{
+				_id: "789",
+				task: "blastoff",
+				completed: false
+			}
+		);
+		expect(justUpdated[1].value).toEqual(
+			{
+				_id: "789",
+				task: "blastoff and away",
+				completed: false
+			}
+		);
 	});
 });
 
@@ -261,6 +327,4 @@ describe("Publication of updates: ", function() {
 		});
 		expect(changes).toBeUndefined();
 	});
-
-
 });
