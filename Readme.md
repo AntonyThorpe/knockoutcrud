@@ -91,12 +91,12 @@ And, in html:
 * `justRemoved`: parked removed instances held temporary incase of cancellation of a collection edit
 * `justAdded`: parked added instances held temporary incase of cancellation of a collection edit
 The reason for `justRemoved` and `justAdded` properties is to speed up the cancel step.  This is quicker than finding the difference betweeen the start and end points before cancelling.
-* `justUpdated`: get what has changed.  Finds the deep difference between the current Observable Array and `beforeEdit` and returns a 'previousValue' and 'value' for comparison.
+* `justUpdated`: get what has changed.  Finds the deep difference between the current Observable Array and `beforeEdit` and returns a 'previous' and 'value' for comparison.
 
 ## Editing an object within an Observable Array
 ### Methods added to Observable Arrays
 * `selectItem`: populates `selectedItem` and provides a clean copy of the item for editing to `itemForEditing` property
-* `acceptItem`: accept the changes and update the original object
+* `acceptItem`: accept the changes and update the original object (publishes the change to 'arrayChange')
 * `revertItem`: cancel changes to the object
 * `removeItem`: remove the item currently being edited
 
@@ -106,7 +106,14 @@ The reason for `justRemoved` and `justAdded` properties is to speed up the cance
 * `itemForAdding`: For when a diffent form is needed for adding
 
 ## Pro Tip: Updating the Server after CRUD Operations
-Upon saving the CRUD operations, call `justRemoved`, `justAdded` and `justUpdated` on the Observable Array to provide a full set of data needed to forward to the server.
+* Upon saving the CRUD operations, call `justRemoved`, `justAdded` and `justUpdated` on the Observable Array to provide a full set of data needed to forward to the server.
+* Update the server as things change:
+```javascript
+spaceExploration.subscribe(function(newValue) {
+    console.log(newValue);  // returns an array of objects with properties: index, previous (for updates) and value (current value of item)
+}, null, "arrayChange");
+
+```
 
 ## Requirements
 * [Knockout](http://knockoutjs.com/index.html)

@@ -62,7 +62,7 @@
 
 		/**
 		 * Compare to the beforeEdit to obtain the difference with the current observableArray.  Useful for updating the server following completion of edits to an observableArray.
-		 * @return {array} two keys of 'previousValue' and 'value'
+		 * @return {array} two keys of 'previous' and 'value'
 		 */
 		this.justUpdated = function(){
 			var originalItems = ko.toJS(this.beforeEdit.peek());
@@ -84,7 +84,7 @@
 							delete originalItem[params.nameOfUpdateFunction];
 							delete item[params.nameOfUpdateFunction];
 							toReturn.push({
-								previousValue: originalItem,
+								previous: originalItem,
 								value: item
 							});
 						}
@@ -157,7 +157,7 @@
 						if (ko.toJSON(old) !== ko.toJSON(exists)) {
 							self.notifySubscribers([{
 								index: index,
-								previousValue: cleanForPublication(old),
+								previous: cleanForPublication(old),
 								status: "updated",
 								value: cleanForPublication(exists)
 							}], "arrayChange");
@@ -330,14 +330,27 @@
 			this.itemForEditing(new params.constructor(ko.toJS(item)));
 		}.bind(this);
 
-		this.acceptItem = function(item) {
+		this.acceptItem = function() {
 			var selected = this.selectedItem(); // obtain "this"
-			var edited = ko.toJS(this.itemForEditing()); //clean copy of edited item
+			var originalItem = ko.toJS(this.selectedItem.peek());
+			delete originalItem[params.nameOfUpdateFunction];
+			var edited = ko.toJS(this.itemForEditing.peek()); //clean copy of edited item
+			delete edited[params.nameOfUpdateFunction];
 
 			//apply updates from the edited item to the selected item
 			selected[params.nameOfUpdateFunction](edited);
 
-			//clear selected item
+			// Publish change
+			if (ko.toJSON(originalItem) !== ko.toJSON(edited)) {
+				this.notifySubscribers([{
+					index: this.indexOf(selected),
+					previous: originalItem,
+					status: "updated",
+					value: edited
+				}], "arrayChange");
+			}
+
+			//clear
 			this.selectedItem(null);
 			this.itemForEditing(null);
 		}.bind(this);

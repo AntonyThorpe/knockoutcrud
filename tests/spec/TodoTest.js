@@ -191,7 +191,7 @@ describe("justUpdated: ", function(){
 
 		var justUpdated = todoList.justUpdated();
 		expect(justUpdated.length).toEqual(2);
-		expect(justUpdated[0].previousValue).toEqual({
+		expect(justUpdated[0].previous).toEqual({
 			_id: "123",
 			task: "start your engines",
 			completed: true
@@ -201,7 +201,7 @@ describe("justUpdated: ", function(){
 			task: "start your engines",
 			completed: false
 		});
-		expect(justUpdated[1].previousValue).toEqual(
+		expect(justUpdated[1].previous).toEqual(
 			{
 				_id: "789",
 				task: "blastoff",
@@ -220,7 +220,7 @@ describe("justUpdated: ", function(){
 
 describe("Publication of updates: ", function() {
 
-	it("Changes to an item are published", function() {
+	it("Upsert that changes an ites are published", function() {
 		var todoList = ko.observableArray().crud({
 			constructor: TodoList,
 			uniqueIdentifier: "_id"
@@ -264,7 +264,7 @@ describe("Publication of updates: ", function() {
 		expect(changes).toBeUndefined();
 	});
 
-	it("Changes within an array return the correct index number and the previous object", function() {
+	it("Upsert changes within an array return the correct index number and the previous object", function() {
 		var todoList = ko.observableArray().crud({
 			constructor: TodoList,
 			uniqueIdentifier: "_id"
@@ -325,6 +325,70 @@ describe("Publication of updates: ", function() {
 			_id: "1234",
 			task: "ignition"
 		});
+		expect(changes).toBeUndefined();
+	});
+
+	it("Where an edit to an item is accepted, the change is published", function(){
+		var todoList = ko.observableArray().crud({
+			constructor: TodoList,
+			uniqueIdentifier: "_id"
+		});
+		var changes;
+		todoList.insert([{
+			_id: "111",
+			task: "we have lift off",
+			completed: true
+		}, {
+			_id: "123",
+			task: "counting down"
+		}, {
+			_id: "1234",
+			task: "ignition"
+		}]);
+
+		todoList.subscribe(function(newValue) {
+			changes = newValue;
+		}, null, "arrayChange");
+
+		todoList.selectItem(todoList()[1]);
+		todoList.itemForEditing().task("counting up");
+		todoList.itemForEditing().completed(true);
+
+		todoList.acceptItem();
+		expect(changes[0].index).toEqual(1);
+		expect(changes[0].previous.task).toBe("counting down");
+		expect(changes[0].previous.completed).toBe(false);
+		expect(changes[0].value.task).toBe("counting up");
+		expect(changes[0].value.completed).toBe(true);
+	});
+
+	it("Where an edit to an item is accepted and nothing is altered, then nothing is published", function(){
+		var todoList = ko.observableArray().crud({
+			constructor: TodoList,
+			uniqueIdentifier: "_id"
+		});
+		var changes;
+		todoList.insert([{
+			_id: "111",
+			task: "we have lift off",
+			completed: true
+		}, {
+			_id: "123",
+			task: "counting down"
+		}, {
+			_id: "1234",
+			task: "ignition"
+		}]);
+
+		todoList.subscribe(function(newValue) {
+			changes = newValue;
+		}, null, "arrayChange");
+
+		todoList.selectItem(todoList()[1]);
+		todoList.itemForEditing().task("counting down");
+		todoList.itemForEditing().completed(false);
+
+		todoList.acceptItem();
 		expect(changes).toBeUndefined();
 	});
 });
