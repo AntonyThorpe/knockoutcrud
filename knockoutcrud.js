@@ -53,6 +53,13 @@
 			params.nameOfUpdateFunction = "update";
 		}
 
+		// Helper Methods
+		var cleanItem = function(item) {
+			item = ko.toJS(item);
+			delete item[params.nameOfUpdateFunction]; // remove method
+			return item;
+		};
+
 		// hold a copy of the original collection for running through upon cancel
 		this.beforeEdit = ko.observable();
 
@@ -133,12 +140,6 @@
 			// Definitions
 			var cleanValues = ko.toJS(valuesToPushOrUpdate);
 
-			var cleanForPublication = function(item) {
-				item = ko.toJS(item);
-				delete item[params.nameOfUpdateFunction]; // remove method
-				return item;
-			};
-
 			if (Object.prototype.toString.call(cleanValues) === "[object Array]") { // if an array
 				var self = this;
 				ko.utils.arrayForEach(cleanValues, function(cleanValue) {
@@ -157,9 +158,9 @@
 						if (ko.toJSON(old) !== ko.toJSON(exists)) {
 							self.notifySubscribers([{
 								index: index,
-								previous: cleanForPublication(old),
+								previous: cleanItem(old),
 								status: "updated",
-								value: cleanForPublication(exists)
+								value: exists
 							}], "arrayChange");
 						}
 
@@ -186,9 +187,9 @@
 					if (ko.toJSON(old) !== ko.toJSON(exists)) {
 						this.notifySubscribers([{
 							index: index,
-							previous: cleanForPublication(old),
+							previous: cleanItem(old),
 							status: "updated",
-							value: cleanForPublication(exists)
+							value: cleanItem(exists)
 						}], "arrayChange");
 					}
 				} else {
@@ -332,10 +333,8 @@
 
 		this.acceptItem = function() {
 			var selected = this.selectedItem(); // obtain "this"
-			var originalItem = ko.toJS(this.selectedItem.peek());
-			delete originalItem[params.nameOfUpdateFunction];
-			var edited = ko.toJS(this.itemForEditing.peek()); //clean copy of edited item
-			delete edited[params.nameOfUpdateFunction];
+			var originalItem = cleanItem(this.selectedItem.peek());
+			var edited = cleanItem(this.itemForEditing.peek()); //clean copy of edited item
 
 			//apply updates from the edited item to the selected item
 			selected[params.nameOfUpdateFunction](edited);
@@ -346,7 +345,7 @@
 					index: this.indexOf(selected),
 					previous: originalItem,
 					status: "updated",
-					value: edited
+					value: selected
 				}], "arrayChange");
 			}
 

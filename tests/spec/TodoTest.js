@@ -358,8 +358,8 @@ describe("Publication of updates: ", function() {
 		expect(changes[0].index).toEqual(1);
 		expect(changes[0].previous.task).toBe("counting down");
 		expect(changes[0].previous.completed).toBe(false);
-		expect(changes[0].value.task).toBe("counting up");
-		expect(changes[0].value.completed).toBe(true);
+		expect(changes[0].value.task()).toBe("counting up");
+		expect(changes[0].value.completed()).toBe(true);
 	});
 
 	it("Where an edit to an item is accepted and nothing is altered, then nothing is published", function(){
