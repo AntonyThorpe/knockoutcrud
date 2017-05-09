@@ -91,18 +91,18 @@ And, in html:
 * `justRemoved`: parked removed instances held temporary incase of cancellation of a collection edit
 * `justAdded`: parked added instances held temporary incase of cancellation of a collection edit
 The reason for `justRemoved` and `justAdded` properties is to speed up the cancel step.  This is quicker than finding the difference betweeen the start and end points before cancelling.
-* `justUpdated`: get what has changed.  Finds the deep difference between the current Observable Array and `beforeEdit` and returns a 'previous' and 'value' for comparison.
+* `justUpdated`: get what has changed.  Finds the deep difference between the current Observable Array and `beforeEdit`.  This function returns a 'previous' and 'value' properties for comparison.
 
 ## Editing an object within an Observable Array
 ### Methods added to Observable Arrays
-* `selectItem`: populates `selectedItem` and provides a clean copy of the item for editing to `itemForEditing` property
+* `selectItem`: populates `selectedItem`(see below) and provides a clean copy of the item for editing to `itemForEditing` property
 * `acceptItem`: accept the changes and update the original object (publishes the change to 'arrayChange')
 * `revertItem`: cancel changes to the object
 * `removeItem`: remove the item currently being edited
 
 ### Properties added to Observable Arrays
-* `selectedItem`: holds the original object (an Observable).  In effect, a copy of 'this'.
-* `itemForEditing`: the edited copy
+* `selectedItem`: holds the original object (an Observable).  In effect, a copy of 'this'.  Don't set its value directly, use `selectItem`.
+* `itemForEditing`: the edited copy.  Don't set its value directly, use `selectItem`.
 * `itemForAdding`: For when a diffent form is needed for adding
 
 ## Pro Tip: Updating the Server after CRUD Operations
