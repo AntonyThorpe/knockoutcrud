@@ -169,7 +169,7 @@
 				 <input type="checkbox" data-bind="checked: completed">Complete
 			</label>
 			<button data-bind="click: $root.saveAdd" class="button">Save</button>
-			<button data-bind="click: $root.cancelAdd" class="button">Cancel</button>
+			<button data-bind="click: $parent.todoList3.cancelAdd" class="button">Cancel</button>
 		</div>
 
 		<div class="content-panel">
@@ -207,7 +207,7 @@
 		</div>
 			
 		<div class="content-panel" data-bind="with: todoList4.itemForAdding">
-			<add-edit params="type: 'Add', task: task, completed: completed, save: $parent.saveAdd4, cancel: $parent.cancelAdd4">
+			<add-edit params="type: 'Add', task: task, completed: completed, save: $parent.saveAdd4, cancel: $parent.todoList4.cancelAdd">
 		</div>
 		<tasks-list params="todoList: todoList4"></tasks-list>
 		

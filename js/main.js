@@ -109,10 +109,6 @@ function TodoViewModel() {
 		self.todoList3.itemForAdding(null);
 	};
 
-	self.cancelAdd = function() {
-		self.todoList3.itemForAdding(null);
-	};
-
 	self.todoList4 = ko.observableArray().crud({
 		constructor: TodoList,
 		uniqueIdentifier: "_id"
@@ -129,11 +125,6 @@ function TodoViewModel() {
 		self.todoList4.insert(ko.toJS(data));
 		self.todoList4.itemForAdding(null);
 	};
-
-	self.cancelAdd4 = function() {
-		self.todoList4.itemForAdding(null);
-	};
-
 };
 
 

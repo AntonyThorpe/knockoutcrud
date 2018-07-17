@@ -101,9 +101,17 @@ The reason for `justRemoved` and `justAdded` properties is to speed up the cance
 * `removeItem`: remove the item currently being edited
 
 ### Properties added to Observable Arrays
-* `selectedItem`: holds the original object (an Observable).  In effect, a copy of 'this'.  Don't set its value directly, use `selectItem`.
+* `selectedItem`: holds the original object (an Observable).  In effect, a copy of 'this'.  Don't set its value directly, use `selectItem`.  Can use like `this.yourObservableArray.selectedItem().update(updatedData);`
 * `itemForEditing`: the edited copy.  Don't set its value directly, use `selectItem`.
 * `itemForAdding`: For when a diffent form is needed for adding
+
+## Adding an object to an Observable Array
+Adding is different from editing so provide `itemForAdding` for holding a protected observable whilst entering.  The `cancelAdd` method is used for throwing this away.
+### Methods added to Observable Arrays
+* `cancelAdd`: clears `itemForAdding`
+
+### Properties added to Observable Arrays
+* `itemForAdding`: An observable for holding an addition to an observable array
 
 ## Pro Tip: Updating the Server after CRUD Operations
 * Upon saving the CRUD operations, call `justRemoved`, `justAdded` and `justUpdated` on the Observable Array to provide a full set of data needed to forward to the server.
@@ -119,7 +127,7 @@ spaceExploration.subscribe(function(newValue) {
 * [Knockout](http://knockoutjs.com/index.html)
 
 ## Links
-* Also see editable feature in [ko.plus](http://stevegreatrex.github.io/ko.plus/).  This is a great plugin to Knockout with similar outcomes.
+* Also see editable feature in [ko.plus](http://stevegreatrex.github.io/ko.plus/).  This is a great plugin for Knockout with similar outcomes.
 
 ## Support
 None sorry.

@@ -309,13 +309,19 @@
 		 */
 		this.itemForAdding = ko.observable();
 
+		// throw away itemForAdding
+		this.cancelAdd = function(){
+            this.itemForAdding(null);
+        }.bind(this);
+
 
 		/**
 		 * Editing an object within an array of objects
 		 *
 		 * hold the currently selected item when editing (keeps a record of what "this" is).
 		When finished editing, use the update function.
-		 * @example yourCollection.selectedItem.update(newData)
+		 * @example var current = yourCollection.selectedItem();
+		 *          current.update(newData);
 		 * @link http://jsfiddle.net/rniemeyer/MQVr3/
 		 */
 
