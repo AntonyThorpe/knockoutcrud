@@ -10,10 +10,10 @@
 	//CommonJS
 	if (typeof require === "function" && typeof exports === "object" && typeof module === "object") {
 		factory(require("knockout"), exports);
-		//AMD
+	//AMD
 	} else if (typeof define === "function" && define.amd) {
 		define(["knockout", "exports"], factory);
-		//normal script tag
+	//normal script tag
 	} else {
 		factory(ko);
 	}

@@ -78,32 +78,38 @@ And, in html:
 ```html
 <input data-bind="textInput: inputField, hasFocus: inputField.focused" />
 ```
+Or, sneaky shortcut if there is only one item in the form that needs focus:
+```html
+<input data-bind="textInput: inputField, hasFocus: true" />
+```
 
 ## Editing a whole Observable Array
 ### Methods added to Observable Arrays
 * `insert`: to add new records to a collection.  This method needs an array or single object of items to push.
 * `upsert`: to add or update records in a collection.  This method needs an array/object of items to push/update (must contain the unique identifier to be able to find objects to update).
-* `deleteItem`: remove an instance from an edited collection
+* `deleteItem`: remove an instance from an edited collection (and adds it to `justRemoved` Observable Array for later reference)
 * `cancelEdit`: roll back the collection to what it was originally
 
 ### Properties added to Observable Arrays
 * `beforeEdit`: hold a copy of the original collection for running through upon cancel
-* `justRemoved`: parked removed instances held temporary incase of cancellation of a collection edit
+* `justRemoved`: parked removed instances held temporary incase of cancellation of a collection edit.  Automatically populated when calling `deleteItem`.
 * `justAdded`: parked added instances held temporary incase of cancellation of a collection edit
 The reason for `justRemoved` and `justAdded` properties is to speed up the cancel step.  This is quicker than finding the difference betweeen the start and end points before cancelling.
+Added objects need to be manually pushed to `justAdded`.
 * `justUpdated`: get what has changed.  Finds the deep difference between the current Observable Array and `beforeEdit`.  This function returns a 'previous' and 'value' properties for comparison.
 
 ## Editing an object within an Observable Array
 ### Methods added to Observable Arrays
-* `selectItem`: populates `selectedItem`(see below) and provides a clean copy of the item for editing to `itemForEditing` property
-* `acceptItem`: accept the changes and update the original object (publishes the change to 'arrayChange')
-* `revertItem`: cancel changes to the object
-* `removeItem`: remove the item currently being edited
+* `selectItem`: populates `selectedItem`(see below) and provides a clean copy of the item for editing to the `itemForEditing` observable.
+* `acceptItem`: accepts the changes and updates the original object.  It then publishes the change to 'arrayChange', which can be subscribed to.
+* `revertItem`: cancel changes to the object by clearing `selectedItem` and `itemForEditing`.
+* `removeItem`: remove the item currently being edited and then clears `selectedItem` and `itemForEditing`.
 
 ### Properties added to Observable Arrays
-* `selectedItem`: holds the original object (an Observable).  In effect, a copy of 'this'.  Don't set its value directly, use `selectItem`.  Can use like `this.yourObservableArray.selectedItem().update(updatedData);`
-* `itemForEditing`: the edited copy.  Don't set its value directly, use `selectItem`.
-* `itemForAdding`: For when a diffent form is needed for adding
+* `selectedItem`: holds the original object (an Observable).  In effect, a copy of 'this'.  Don't set its value directly, use `selectItem` so that `itemForEditing` can be populated with a clean object for editing.
+The `selectedItem` can be used like `this.yourObservableArray.selectedItem().update(updatedData);`
+* `itemForEditing`: a clean copy for editing.  Populate by using `selectItem`.
+* `itemForAdding`: handy for when a second form is needed during an active editing process.
 
 ## Adding an object to an Observable Array
 Adding is different from editing so provide `itemForAdding` for holding a protected observable whilst entering.  The `cancelAdd` method is used for throwing this away.
@@ -111,11 +117,11 @@ Adding is different from editing so provide `itemForAdding` for holding a protec
 * `cancelAdd`: clears `itemForAdding`
 
 ### Properties added to Observable Arrays
-* `itemForAdding`: An observable for holding an addition to an observable array
+* `itemForAdding`: An observable for holding a potential addition to an observable array.
 
 ## Pro Tip: Updating the Server after CRUD Operations
-* Upon saving the CRUD operations, call `justRemoved`, `justAdded` and `justUpdated` on the Observable Array to provide a full set of data needed to forward to the server.
-* Update the server as things change:
+* Upon saving the CRUD operations, call `justRemoved`, `justAdded`, and then `justUpdated` on the Observable Array to provide a full set of data needed to forward to the server.
+* Or, update the server as things change:
 ```javascript
 spaceExploration.subscribe(function(newValue) {
     console.log(newValue);  // returns an array of objects with properties: index, previous (for updates) and value (current value of item)
