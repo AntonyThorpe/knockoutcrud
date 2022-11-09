@@ -99,7 +99,7 @@
 					return toReturn;
 				}
 			}
-			return null;
+			return [];
 		};
 
 
