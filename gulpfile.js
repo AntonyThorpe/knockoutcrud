@@ -1,14 +1,27 @@
 // npm install browser-sync gulp --save-dev 
-var gulp = require('gulp');
-var browserSync = require('browser-sync').create();
+const { gulp, watch, series, parallel, src, dest} = require('gulp');
+// Browser Sync (https://www.browsersync.io/docs/gulp)
+var browserSync = require('/usr/local/lib/node_modules/browser-sync').create();
 
-gulp.task('serve', function() {
+/**
+ * [serve description]
+ */
+function serve() {
+
+	// Serve files from the root of this project
+	// https://www.browsersync.io/docs/options
 	browserSync.init({
-		server: {
-			baseDir: "./",
-			browser: "google chrome"
-		}
+		baseDir: "./",
+		browser: "firefox",
+		server: true,
+		port: 3010,
+		open: "local",
+		online: false
 	});
-	gulp.watch("index.html").on('change', browserSync.reload);
-	gulp.watch("js/*.js").on('change', browserSync.reload);
-});
+	watch("knockoutcrud.js").on('change', browserSync.reload);
+	watch("html.index").on('change', browserSync.reload);
+	watch("js/*.js").on('change', browserSync.reload);
+	watch("css/*.css").on('change', browserSync.reload);
+};
+
+exports.serve = series(serve);

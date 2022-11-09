@@ -22,7 +22,6 @@
 	},
 	"homepage": "https://github.com/AntonyThorpe/knockoutcrud",
 	"devDependencies": {
-		"browser-sync": "^2.18.6",
-		"gulp": "^3.9.1"
+		"gulp": "^4.0.2"
 	}
 }

@@ -72,7 +72,7 @@
 		 * @return {array} two keys of 'previous' and 'value'
 		 */
 		this.justUpdated = function(){
-			var originalItems = ko.toJS(this.beforeEdit.peek());
+			var originalItems = this.beforeEdit.peek();
 			if (originalItems) {
 				var edited = ko.observableArray(this.slice(0));
 				edited.removeAll(this.justAdded.peek());
@@ -87,7 +87,7 @@
 						});
 
 						// record if different
-						if (ko.toJSON(item) !== ko.toJSON(originalItem)) {
+						if (originalItem && (ko.toJSON(item) !== ko.toJSON(originalItem))) {
 							delete originalItem[params.nameOfUpdateFunction];
 							delete item[params.nameOfUpdateFunction];
 							toReturn.push({

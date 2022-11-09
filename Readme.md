@@ -96,7 +96,7 @@ Or, sneaky shortcut if there is only one item in the form that needs focus:
 * `justAdded`: parked added instances held temporary incase of cancellation of a collection edit
 The reason for `justRemoved` and `justAdded` properties is to speed up the cancel step.  This is quicker than finding the difference betweeen the start and end points before cancelling.
 Added objects need to be manually pushed to `justAdded`.
-* `justUpdated`: get what has changed.  Finds the deep difference between the current Observable Array and `beforeEdit`.  This function returns a 'previous' and 'value' properties for comparison.
+* `justUpdated`: get what has changed.  Finds the deep difference between the current Observable Array and `beforeEdit`.  This function returns a 'previous' and 'value' properties for comparison.  The `beforeEdit` must be populated for this to work.
 
 ## Editing an object within an Observable Array
 ### Methods added to Observable Arrays
